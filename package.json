@@ -4,10 +4,11 @@
   "description": "Shared Entra External ID authentication for TCTS services",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": ["dist", "src"],
   "scripts": {
     "build": "tsc",
     "lint": "eslint src/",
+    "prepare": "npm run build",
     "prepublishOnly": "npm run build"
   },
   "publishConfig": {
