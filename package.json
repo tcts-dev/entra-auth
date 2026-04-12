@@ -1,5 +1,5 @@
 {
-  "name": "@tcts/entra-auth",
+  "name": "@tcts-dev/entra-auth",
   "version": "0.1.0",
   "description": "Shared Entra External ID authentication for TCTS services",
   "main": "dist/index.js",

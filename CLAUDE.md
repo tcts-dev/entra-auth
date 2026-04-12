@@ -21,13 +21,13 @@ This package is consumed by:
 Add to `.npmrc` in the consuming repo:
 
 ```
-@tcts:registry=https://npm.pkg.github.com
+@tcts-dev:registry=https://npm.pkg.github.com
 ```
 
 Then:
 
 ```bash
-npm install @tcts/entra-auth
+npm install @tcts-dev/entra-auth
 ```
 
 ## Key decisions
