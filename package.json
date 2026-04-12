@@ -1,0 +1,39 @@
+{
+  "name": "@tcts/entra-auth",
+  "version": "0.1.0",
+  "description": "Shared Entra External ID authentication for TCTS services",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src/",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tcts-dev/entra-auth.git"
+  },
+  "peerDependencies": {
+    "next-auth": "5.x",
+    "next": ">=14"
+  },
+  "peerDependenciesMeta": {
+    "next-auth": { "optional": true },
+    "next": { "optional": true }
+  },
+  "dependencies": {
+    "jose": "^5.0.0",
+    "@azure/msal-node": "^2.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0",
+    "eslint": "^9.0.0",
+    "next-auth": "5.0.0-beta.30",
+    "next": "^16.0.0"
+  }
+}
