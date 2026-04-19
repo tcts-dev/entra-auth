@@ -2,17 +2,14 @@
   "name": "@tcts-dev/entra-auth",
   "version": "0.1.1",
   "description": "Shared Entra External ID authentication for TCTS services",
+  "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist", "src"],
   "scripts": {
     "build": "tsc",
     "lint": "eslint src/",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm run build"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
