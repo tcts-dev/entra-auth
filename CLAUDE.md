@@ -21,7 +21,11 @@ This package is consumed by:
 Consumed via SHA-pinned `git+https://` in the consumer's `package.json` (not GitHub Packages — see workspace `CLAUDE.md` for why):
 
 ```json
-"@tcts-dev/entra-auth": "git+https://github.com/tcts-dev/entra-auth.git#<commit-sha>"
+{
+  "dependencies": {
+    "@tcts-dev/entra-auth": "git+https://github.com/tcts-dev/entra-auth.git#<commit-sha>"
+  }
+}
 ```
 
 Then:
