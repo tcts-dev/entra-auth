@@ -18,17 +18,19 @@ This package is consumed by:
 
 ## Install
 
-Add to `.npmrc` in the consuming repo:
+Consumed via SHA-pinned `git+https://` in the consumer's `package.json` (not GitHub Packages — see workspace `CLAUDE.md` for why):
 
-```
-@tcts-dev:registry=https://npm.pkg.github.com
+```json
+"@tcts-dev/entra-auth": "git+https://github.com/tcts-dev/entra-auth.git#<commit-sha>"
 ```
 
 Then:
 
 ```bash
-npm install @tcts-dev/entra-auth
+npm install
 ```
+
+To pick up a new version in a consumer, bump the SHA — `npm` caches git deps aggressively.
 
 ## Key decisions
 
