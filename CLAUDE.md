@@ -1,4 +1,4 @@
-# @tcts/entra-auth
+# @tcts-dev/entra-auth
 
 Shared authentication package for TCTS services. Handles Entra External ID (CIAM) token validation, Auth.js v5 integration, Express middleware, service-to-service credentials, and MS Graph user management.
 
