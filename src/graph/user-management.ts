@@ -94,6 +94,107 @@ export async function createUser(
 }
 
 /**
+ * Invite an external user as a B2B guest in the Entra External ID tenant.
+ *
+ * Unlike `createUser`, which creates a LOCAL email+password account that
+ * Entra resolves *before* trying federation (and therefore blocks SSO from
+ * any federated workforce tenant), this function uses Graph's
+ * `/invitations` endpoint to create a FEDERATED guest. Microsoft sends the
+ * invitation email; on acceptance, the user's home-tenant identity (e.g.
+ * their `ckscrivner.com` workforce account or a personal Microsoft
+ * account) gets linked into the External ID directory and SSO works.
+ *
+ * **Use this** for any user whose email belongs to:
+ *   - A federated workforce Entra tenant
+ *   - A personal Microsoft account (`outlook.com`, `hotmail.com`, etc.)
+ *   - Another Entra / Azure AD tenant
+ *
+ * **Use `createUser`** only for users who genuinely have no Microsoft
+ * identity anywhere (rare — outside contractors with no other email).
+ * That path requires the user to complete a Forgot-Password flow on first
+ * sign-in, which is a real UX gap.
+ *
+ * **Required Graph permission:** `User.Invite.All` (application or
+ * delegated). If the app registration is missing this consent, the call
+ * fails with 403 `Authorization_RequestDenied`.
+ *
+ * @see https://learn.microsoft.com/en-us/graph/api/invitation-post
+ */
+export interface InviteB2BGuestParams {
+  /** External email the invitation gets sent to. */
+  email: string;
+  /** Display name shown in the External ID directory. */
+  displayName: string;
+  /**
+   * Post-acceptance landing URL — where the user is redirected after
+   * accepting the invite. Typically the consumer app's sign-in page
+   * (e.g. `https://sawyer.tcts.network`).
+   */
+  inviteRedirectUrl: string;
+  /**
+   * Whether Microsoft should send the invitation email automatically.
+   * Defaults to `true`. Set to `false` if the consumer app wants to
+   * handle delivery itself using the `inviteRedeemUrl` returned in the
+   * response (e.g. embed it in a custom HTML email).
+   */
+  sendInvitationMessage?: boolean;
+  /**
+   * Optional custom message body shown in the Microsoft invitation
+   * email. Ignored when `sendInvitationMessage` is `false`.
+   */
+  messageBody?: string;
+}
+
+export interface InvitationResponse {
+  /** GUID of the invitation object itself (not the invited user). */
+  id: string;
+  /**
+   * The Microsoft redeem URL — share this if `sendInvitationMessage`
+   * was `false` and you're handling email delivery yourself.
+   */
+  inviteRedeemUrl: string;
+  invitedUserDisplayName: string;
+  invitedUserEmailAddress: string;
+  /** The User object Microsoft created for the invitee in the directory. */
+  invitedUser: { id: string; displayName?: string };
+  sendInvitationMessage: boolean;
+  /** Typically `"PendingAcceptance"` on creation. */
+  status: string;
+}
+
+export async function inviteB2BGuest(
+  client: GraphClient,
+  params: InviteB2BGuestParams,
+): Promise<InvitationResponse> {
+  const {
+    email,
+    displayName,
+    inviteRedirectUrl,
+    sendInvitationMessage = true,
+    messageBody,
+  } = params;
+
+  const body: Record<string, unknown> = {
+    invitedUserEmailAddress: email,
+    invitedUserDisplayName: displayName,
+    inviteRedirectUrl,
+    sendInvitationMessage,
+  };
+
+  // Only attach the message-info block when there's something to say
+  // — sending an empty `invitedUserMessageInfo` object causes the
+  // default Microsoft template not to render the custom-message slot.
+  if (sendInvitationMessage && messageBody) {
+    body.invitedUserMessageInfo = {
+      messageLanguage: 'en-US',
+      customizedMessageBody: messageBody,
+    };
+  }
+
+  return client.callGraph<InvitationResponse>('POST', '/invitations', body);
+}
+
+/**
  * Disable a user's account (soft delete / suspend).
  */
 export async function disableUser(

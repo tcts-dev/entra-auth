@@ -56,10 +56,13 @@ export {
   listUsers,
   getUserById,
   createUser,
+  inviteB2BGuest,
   disableUser,
   enableUser,
 } from './graph/user-management.js';
 export type {
   ExternalIdUser,
   UserIdentity,
+  InviteB2BGuestParams,
+  InvitationResponse,
 } from './graph/user-management.js';
