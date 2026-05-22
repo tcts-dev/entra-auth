@@ -59,10 +59,13 @@ entirely.
 
 **Default to `inviteB2BGuest()`.** Reach for `createUser()` only when
 you've confirmed the user has no Microsoft identity. If you're not sure,
-invite — Microsoft handles "viral tenant" creation for raw email
-addresses, so an invite to a Gmail user still works.
+send the invitation — Microsoft handles "viral tenant" creation
+(automatic lightweight identity-container provisioning for an email
+address that isn't already attached to any Microsoft tenant) for raw
+email addresses, so an invitation to a Gmail user still works.
 
 **Graph permissions required:**
 - `inviteB2BGuest()` → `User.Invite.All`
-- `createUser()` → `User.ReadWrite.All` (or `Application.ReadWrite.OwnedBy` for narrow create-only)
+- `createUser()` → `User.ReadWrite.All` AND `Directory.ReadWrite.All` (per the
+  Microsoft Graph docs for `POST /users`)
 - `listUsers()` / `getUserById()` → `User.Read.All`
