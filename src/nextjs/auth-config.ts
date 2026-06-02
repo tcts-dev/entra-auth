@@ -28,6 +28,13 @@ export function createAuthConfig(options: AuthConfigOptions): Record<string, unk
         authorization: {
           params: {
             scope: 'openid profile email offline_access',
+            // Force the account picker on every interactive sign-in. Without
+            // this, ciamlogin.com silently resumes a remembered ESTS session
+            // and shortcuts the first attempt straight to "Enter password"
+            // for the CIAM local-account UPN (a GUID @…onmicrosoft.com),
+            // requiring a back-out + retry to reach the picker. See
+            // tcts-dev/entra-auth#5.
+            prompt: 'select_account',
           },
         },
       },
