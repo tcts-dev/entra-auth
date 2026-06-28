@@ -1,3 +1,4 @@
+import { randomInt } from 'node:crypto';
 import type { GraphClient } from './client.js';
 
 export interface ExternalIdUser {
@@ -228,23 +229,26 @@ export async function enableUser(
 
 /**
  * Generate a random initial password that satisfies Entra's complexity rules:
- * at least 8 chars, upper + lower + digit + symbol.
+ * at least 12 chars, upper + lower + digit + symbol.
  */
 function generateInitialPassword(): string {
+  const minLength = 12;
   const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
   const lower = 'abcdefghjkmnpqrstuvwxyz';
   const digits = '23456789';
   const symbols = '!@#$%^&*';
   const all = upper + lower + digits + symbols;
 
-  const rand = (chars: string): string =>
-    chars[Math.floor(Math.random() * chars.length)] ?? chars[0];
+  const rand = (chars: string): string => chars[randomInt(chars.length)] ?? chars[0];
 
   const required = [rand(upper), rand(lower), rand(digits), rand(symbols)];
-  const extra = Array.from({ length: 8 }, () => rand(all));
-  const password = [...required, ...extra]
-    .sort(() => Math.random() - 0.5)
-    .join('');
+  const extra = Array.from({ length: minLength - required.length }, () => rand(all));
+  const passwordChars = [...required, ...extra];
 
-  return password;
+  for (let i = passwordChars.length - 1; i > 0; i -= 1) {
+    const j = randomInt(i + 1);
+    [passwordChars[i], passwordChars[j]] = [passwordChars[j]!, passwordChars[i]!];
+  }
+
+  return passwordChars.join('');
 }

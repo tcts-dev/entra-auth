@@ -21,7 +21,9 @@ export interface GraphClient {
 }
 
 const GRAPH_SCOPE = 'https://graph.microsoft.com/.default';
-const GRAPH_BASE = 'https://graph.microsoft.com/v1.0';
+const GRAPH_PROTOCOL = 'https:';
+const GRAPH_HOSTNAME = 'graph.microsoft.com';
+const GRAPH_BASE = `${GRAPH_PROTOCOL}//${GRAPH_HOSTNAME}/v1.0`;
 const EXPIRY_BUFFER_MS = 60_000;
 
 /**
@@ -77,8 +79,8 @@ export function createGraphClient(options: GraphClientOptions): GraphClient {
     path: string,
     body?: unknown,
   ): Promise<T> {
+    const url = resolveGraphUrl(path);
     const token = await getToken();
-    const url = path.startsWith('https://') ? path : `${GRAPH_BASE}${path}`;
 
     const init: RequestInit = {
       method,
@@ -110,4 +112,30 @@ export function createGraphClient(options: GraphClientOptions): GraphClient {
   }
 
   return { getToken, callGraph };
+}
+
+export function resolveGraphUrl(path: string): string {
+  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(path)) {
+    let url: URL;
+    try {
+      url = new URL(path);
+    } catch {
+      throw new Error('Graph client: invalid Graph URL');
+    }
+
+    if (
+      url.protocol !== GRAPH_PROTOCOL ||
+      url.hostname !== GRAPH_HOSTNAME ||
+      (url.port !== '' && url.port !== '443')
+    ) {
+      throw new Error('Graph client: refusing to send token to non-Graph URL');
+    }
+    return url.toString();
+  }
+
+  if (!path.startsWith('/')) {
+    throw new Error('Graph client: relative paths must start with "/"');
+  }
+
+  return `${GRAPH_BASE}${path}`;
 }

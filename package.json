@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint src/",
+    "test": "npm run build && node --test",
     "prepare": "npm run build"
   },
   "repository": {
