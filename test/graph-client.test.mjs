@@ -17,6 +17,13 @@ test('resolveGraphUrl allows Microsoft Graph nextLink URLs', () => {
   );
 });
 
+test('resolveGraphUrl allows Microsoft Graph URLs with explicit HTTPS port', () => {
+  assert.equal(
+    resolveGraphUrl('https://graph.microsoft.com:443/v1.0/users'),
+    'https://graph.microsoft.com/v1.0/users',
+  );
+});
+
 test('resolveGraphUrl rejects non-Graph HTTPS URLs', () => {
   assert.throws(
     () => resolveGraphUrl('https://example.com/users'),

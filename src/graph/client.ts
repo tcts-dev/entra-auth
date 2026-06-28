@@ -21,8 +21,9 @@ export interface GraphClient {
 }
 
 const GRAPH_SCOPE = 'https://graph.microsoft.com/.default';
-const GRAPH_ORIGIN = 'https://graph.microsoft.com';
-const GRAPH_BASE = `${GRAPH_ORIGIN}/v1.0`;
+const GRAPH_PROTOCOL = 'https:';
+const GRAPH_HOSTNAME = 'graph.microsoft.com';
+const GRAPH_BASE = `${GRAPH_PROTOCOL}//${GRAPH_HOSTNAME}/v1.0`;
 const EXPIRY_BUFFER_MS = 60_000;
 
 /**
@@ -122,7 +123,11 @@ export function resolveGraphUrl(path: string): string {
       throw new Error('Graph client: invalid Graph URL');
     }
 
-    if (url.origin !== GRAPH_ORIGIN) {
+    if (
+      url.protocol !== GRAPH_PROTOCOL ||
+      url.hostname !== GRAPH_HOSTNAME ||
+      (url.port !== '' && url.port !== '443')
+    ) {
       throw new Error('Graph client: refusing to send token to non-Graph URL');
     }
     return url.toString();
