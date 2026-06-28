@@ -24,6 +24,13 @@ test('resolveGraphUrl rejects non-Graph HTTPS URLs', () => {
   );
 });
 
+test('resolveGraphUrl rejects non-HTTPS absolute URLs as non-Graph URLs', () => {
+  assert.throws(
+    () => resolveGraphUrl('http://graph.microsoft.com/v1.0/users'),
+    /refusing to send token to non-Graph URL/,
+  );
+});
+
 test('resolveGraphUrl normalizes malformed Graph URL errors', () => {
   assert.throws(() => resolveGraphUrl('https://%'), /invalid Graph URL/);
 });

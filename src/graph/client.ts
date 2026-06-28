@@ -114,7 +114,7 @@ export function createGraphClient(options: GraphClientOptions): GraphClient {
 }
 
 export function resolveGraphUrl(path: string): string {
-  if (path.startsWith('https://')) {
+  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(path)) {
     let url: URL;
     try {
       url = new URL(path);

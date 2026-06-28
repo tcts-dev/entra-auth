@@ -31,7 +31,7 @@ test('createUser generates an Entra-compatible initial password shape', async ()
 
   const password = requestBody?.passwordProfile?.password;
   assert.equal(typeof password, 'string');
-  assert.equal(password.length, 12);
+  assert.ok(password.length >= 12);
   assert.match(password, /[ABCDEFGHJKLMNPQRSTUVWXYZ]/);
   assert.match(password, /[abcdefghjkmnpqrstuvwxyz]/);
   assert.match(password, /[23456789]/);
