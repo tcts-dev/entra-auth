@@ -21,7 +21,8 @@ export interface GraphClient {
 }
 
 const GRAPH_SCOPE = 'https://graph.microsoft.com/.default';
-const GRAPH_BASE = 'https://graph.microsoft.com/v1.0';
+const GRAPH_ORIGIN = 'https://graph.microsoft.com';
+const GRAPH_BASE = `${GRAPH_ORIGIN}/v1.0`;
 const EXPIRY_BUFFER_MS = 60_000;
 
 /**
@@ -78,7 +79,7 @@ export function createGraphClient(options: GraphClientOptions): GraphClient {
     body?: unknown,
   ): Promise<T> {
     const token = await getToken();
-    const url = path.startsWith('https://') ? path : `${GRAPH_BASE}${path}`;
+    const url = resolveGraphUrl(path);
 
     const init: RequestInit = {
       method,
@@ -110,4 +111,20 @@ export function createGraphClient(options: GraphClientOptions): GraphClient {
   }
 
   return { getToken, callGraph };
+}
+
+function resolveGraphUrl(path: string): string {
+  if (path.startsWith('https://')) {
+    const url = new URL(path);
+    if (url.origin !== GRAPH_ORIGIN) {
+      throw new Error('Graph client: refusing to send token to non-Graph URL');
+    }
+    return url.toString();
+  }
+
+  if (!path.startsWith('/')) {
+    throw new Error('Graph client: relative paths must start with "/"');
+  }
+
+  return `${GRAPH_BASE}${path}`;
 }
