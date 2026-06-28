@@ -232,6 +232,7 @@ export async function enableUser(
  * at least 12 chars, upper + lower + digit + symbol.
  */
 function generateInitialPassword(): string {
+  const minLength = 12;
   const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
   const lower = 'abcdefghjkmnpqrstuvwxyz';
   const digits = '23456789';
@@ -241,7 +242,7 @@ function generateInitialPassword(): string {
   const rand = (chars: string): string => chars[randomInt(chars.length)] ?? chars[0];
 
   const required = [rand(upper), rand(lower), rand(digits), rand(symbols)];
-  const extra = Array.from({ length: 8 }, () => rand(all));
+  const extra = Array.from({ length: minLength - required.length }, () => rand(all));
   const passwordChars = [...required, ...extra];
 
   for (let i = passwordChars.length - 1; i > 0; i -= 1) {

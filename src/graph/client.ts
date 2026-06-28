@@ -78,8 +78,8 @@ export function createGraphClient(options: GraphClientOptions): GraphClient {
     path: string,
     body?: unknown,
   ): Promise<T> {
-    const token = await getToken();
     const url = resolveGraphUrl(path);
+    const token = await getToken();
 
     const init: RequestInit = {
       method,
@@ -113,9 +113,15 @@ export function createGraphClient(options: GraphClientOptions): GraphClient {
   return { getToken, callGraph };
 }
 
-function resolveGraphUrl(path: string): string {
+export function resolveGraphUrl(path: string): string {
   if (path.startsWith('https://')) {
-    const url = new URL(path);
+    let url: URL;
+    try {
+      url = new URL(path);
+    } catch {
+      throw new Error('Graph client: invalid Graph URL');
+    }
+
     if (url.origin !== GRAPH_ORIGIN) {
       throw new Error('Graph client: refusing to send token to non-Graph URL');
     }
